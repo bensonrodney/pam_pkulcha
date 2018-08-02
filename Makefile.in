@@ -1,0 +1,46 @@
+CC = @CC@
+LDFLAGS = @LDFLAGS@
+CPPFLAGS = @CPPFLAGS@ @DEFS@
+CFLAGS = @CFLAGS@
+LIBS = @LIBS@
+SHOBJFLAGS = @SHOBJFLAGS@
+SHOBJLDFLAGS = @SHOBJLDFLAGS@
+
+PREFIX = @prefix@
+prefix = $(PREFIX)
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+security_dir = $(libdir)/security
+
+all: pam_pkulcha.@SHOBJEXT@
+
+pam_pkulcha.o: pam_pkulcha.c
+pam_pkulcha.@SHOBJEXT@: pam_pkulcha.o
+
+%.o:
+	$(CC) $(SHOBJFLAGS) $(CFLAGS) $(CPPFLAGS) -o "$@" -c $(filter %.c, $^)
+
+%.@SHOBJEXT@:
+	$(CC) $(SHOBJFLAGS) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(SHOBJLDFLAGS) -o "$@" $(filter %.o, $^) $(LIBS)
+	@WEAKENSYMS@ "$@"
+	@REMOVESYMS@ "$@"
+
+clean:
+	rm -f pam_pkulcha.o
+	rm -f pam_pkulcha.@SHOBJEXT@
+
+distclean: clean
+	rm -f Makefile pam_pkulcha.syms config.log config.status
+	rm -rf autom4te.cache
+
+mrproper: distclean
+	rm -f configure aclocal.m4
+
+install: pam_pkulcha.@SHOBJEXT@
+	rm -f "$(DESTDIR)$(security_dir)/pam_pkulcha.@SHOBJEXT@"
+	mkdir -p "$(DESTDIR)$(security_dir)"
+	cp pam_pkulcha.@SHOBJEXT@ "$(DESTDIR)$(security_dir)/pam_pkulcha.@SHOBJEXT@"
+	chmod 755 "$(DESTDIR)$(security_dir)/pam_pkulcha.@SHOBJEXT@"
+	-chown root:root "$(DESTDIR)$(security_dir)/pam_pkulcha.@SHOBJEXT@"
+
+.PHONY: all clean distclean install
