@@ -15,6 +15,7 @@
 #include <syslog.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h>
 
 /* returns a random line from a file
  */
@@ -121,6 +122,12 @@ int get_chal_resp(char *filename, char *challenge, char *response) {
 	return 0;
 }
 
+char* lower(char *p) {
+	char *orig = p;
+	for ( ; *p; p++) *p = tolower(*p);
+  return orig;
+}
+
 void test_strstrip() {
 	char ts1[100];
 	char ts2[100];
@@ -169,7 +176,15 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
 
 	/* test_strstrip(); */
 	get_chal_resp(srcFile, challenge, response);
+	lower(response);
 	printf("challenge: |%s|\nresponse : |%s|\n", challenge, response);
+
+  struct pam_message prompt[1], resp[1];
+  prompt[0].msg_style = PAM_PROMPT_ECHO_ON;
+  prompt[0].msg = challenge;
+
+  //pamh.conv(1, prompt, resp, NULL);
+
 	return(PAM_SUCCESS);
 }
 
