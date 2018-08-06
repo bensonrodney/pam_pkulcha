@@ -181,13 +181,15 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
 
   struct pam_message msg = { .msg_style = PAM_PROMPT_ECHO_ON,
                              .msg = challenge };
-  struct pam_message *msgs = &msg;
+  struct pam_message *ptr_msg = &msg;
+	const struct pam_message *msgs[1] = {ptr_msg};
 
   struct pam_response *resp = NULL;
+	struct pam_response **resps = &resp;
   struct pam_conv *conv;
   int retval = pam_get_item(pamh, PAM_CONV, (void *)&conv);
   if (retval == PAM_SUCCESS) {
-      conv->conv(1, msgs, resp, conv->appdata_ptr);
+      conv->conv(1, msgs, resps, conv->appdata_ptr);
   }
 
 	return(PAM_SUCCESS);
