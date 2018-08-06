@@ -160,39 +160,47 @@ int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const char **argv)
 }
 
 int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-	char srcFile[1024];
-	char challenge[512];
-	char response[512];
+  char srcFile[1024];
+  char challenge[512];
+  char response[512];
 
   /* set the file if it's specified, otherwise use the default */
-	if (argc < 2) {
-		strcpy(srcFile, "/etc/security/pam_pkulcha.txt");
-	}
-	else {
-	  strcpy(srcFile, argv[1]);
-	}
-	/* pam_syslog(pamh, LOG_INFO, "srcFile: %s\n", srcFile); */
-	printf("srcFile: %s\n", srcFile);
+  if (argc < 2) {
+    strcpy(srcFile, "/etc/security/pam_pkulcha.txt");
+  }
+  else {
+    strcpy(srcFile, argv[1]);
+  }
+  pam_syslog(pamh, LOG_INFO, "srcFile: %s\n", srcFile);
 
-	/* test_strstrip(); */
-	get_chal_resp(srcFile, challenge, response);
-	lower(response);
-	printf("challenge: |%s|\nresponse : |%s|\n", challenge, response);
+  /* test_strstrip(); */
+  get_chal_resp(srcFile, challenge, response);
+  lower(response);
+  /* printf("challenge: |%s|\nresponse : |%s|\n", challenge, response); */
 
   struct pam_message msg = { .msg_style = PAM_PROMPT_ECHO_ON,
-                             .msg = challenge };
+                             .msg = strcat(challenge, ": ") };
   struct pam_message *ptr_msg = &msg;
-	const struct pam_message *msgs[1] = {ptr_msg};
+  const struct pam_message *msgs[1] = {ptr_msg};
 
-  struct pam_response *resp = NULL;
-	struct pam_response **resps = &resp;
+  struct pam_response *resps = NULL;
   struct pam_conv *conv;
   int retval = pam_get_item(pamh, PAM_CONV, (void *)&conv);
   if (retval == PAM_SUCCESS) {
-      conv->conv(1, msgs, resps, conv->appdata_ptr);
+    retval = conv->conv(1, msgs, &resps, conv->appdata_ptr);
   }
 
-	return(PAM_SUCCESS);
+  if (retval != PAM_SUCCESS || resps == NULL || resps->resp == NULL ) {
+    /* conversation failed */
+    pam_syslog(pamh, LOG_ERR, "PAM conversation failed.");
+    return(PAM_AUTH_ERR);
+  }
+
+  strtrim(lower(resps->resp));
+  retval = (strcmp(response, resps->resp) == 0) ? PAM_SUCCESS : PAM_AUTH_ERR;
+
+  free(resps);
+  return(retval);
 }
 
 int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
