@@ -98,65 +98,65 @@ int strtrim(char *instr) {
 }
 
 int get_chal_resp_from_line(char *line, char *challenge, char *response) {
-	char *token, *p;
-	token = strtok_r(line, "|", &p);
+  char *token, *p;
+  token = strtok_r(line, "|", &p);
   strcpy(challenge, (token == NULL ? "" : token));
 
   token = strtok_r(NULL, "|", &p);
-	strcpy(response, (token == NULL ? "" : token));
+  strcpy(response, (token == NULL ? "" : token));
 
   /* printf("pre-strip challenge: |%s|\n", challenge);
-	   printf("pre-strip response : |%s|\n", response); */
+  printf("pre-strip response : |%s|\n", response); */
 
-	strtrim(challenge);
-	strtrim(response);
+  strtrim(challenge);
+  strtrim(response);
 
-	return 1;
+  return 1;
 }
 
 int get_chal_resp(char *filename, char *challenge, char *response) {
   char *chalresp = random_line_from_file(filename);
   get_chal_resp_from_line(chalresp, challenge, response);
 
-	free(chalresp);
-	return 0;
+  free(chalresp);
+  return 0;
 }
 
 char* lower(char *p) {
-	char *orig = p;
-	for ( ; *p; p++) *p = tolower(*p);
+  char *orig = p;
+  for ( ; *p; p++) *p = tolower(*p);
   return orig;
 }
 
 void test_strstrip() {
-	char ts1[100];
-	char ts2[100];
-	char ts3[100];
-	char ts4[100];
-	strcpy(ts1, "  two gap   at the start and end  ");
-	strcpy(ts2, " one gap at the start  ");
-	strcpy(ts3, "no gap");
-	strcpy(ts4, "");
-	strtrim(ts1);
-	strtrim(ts2);
-	strtrim(ts3);
-	strtrim(ts4);
-	printf("ts1: |%s|\n", ts1);
-	printf("ts2: |%s|\n", ts2);
-	printf("ts3: |%s|\n", ts3);
-	printf("ts4: |%s|\n", ts4);
+  char ts1[100];
+  char ts2[100];
+  char ts3[100];
+  char ts4[100];
+  strcpy(ts1, "  two gap   at the start and end  ");
+  strcpy(ts2, " one gap at the start  ");
+  strcpy(ts3, "no gap");
+  strcpy(ts4, "");
+  strtrim(ts1);
+  strtrim(ts2);
+  strtrim(ts3);
+  strtrim(ts4);
+  printf("ts1: |%s|\n", ts1);
+  printf("ts2: |%s|\n", ts2);
+  printf("ts3: |%s|\n", ts3);
+  printf("ts4: |%s|\n", ts4);
 }
 
 int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-	return(PAM_IGNORE);
+  return(PAM_IGNORE);
 }
 
 int pam_sm_close_session(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-	return(PAM_IGNORE);
+  return(PAM_IGNORE);
 }
 
 int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-	return(PAM_IGNORE);
+  return(PAM_IGNORE);
 }
 
 int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
@@ -204,9 +204,9 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
 }
 
 int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-	return(PAM_IGNORE);
+  return(PAM_IGNORE);
 }
 
 int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-	return(PAM_IGNORE);
+  return(PAM_IGNORE);
 }
