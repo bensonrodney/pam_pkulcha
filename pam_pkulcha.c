@@ -19,7 +19,7 @@
 
 /* trims whitespace from the beginning the and end of a string
  */
-int strtrim(char *instr) {
+char* strtrim(char *instr) {
 	int i, start;
 	char ch;
 
@@ -60,26 +60,19 @@ int strtrim(char *instr) {
 		if (instr[i] == '\0')
 			break;
 	}
-	return 1;
+	return instr;
 }
+
 /* tests for the strtrim() function above
 void test_strstrip() {
-  char ts1[100];
-  char ts2[100];
-  char ts3[100];
-  char ts4[100];
-  strcpy(ts1, "  two gap   at the start and end  ");
-  strcpy(ts2, " one gap at the start  ");
-  strcpy(ts3, "no gap");
-  strcpy(ts4, "");
-  strtrim(ts1);
-  strtrim(ts2);
-  strtrim(ts3);
-  strtrim(ts4);
-  printf("ts1: |%s|\n", ts1);
-  printf("ts2: |%s|\n", ts2);
-  printf("ts3: |%s|\n", ts3);
-  printf("ts4: |%s|\n", ts4);
+  char ts1[100] = "  two gap   at the start and end  ";
+  char ts2[100] = " one gap at the start  ";
+  char ts3[100] = "no gaps";
+  char ts4[100]= "";
+  printf("ts1: |%s|\n", strtrim(ts1));
+  printf("ts2: |%s|\n", strtrim(ts2));
+  printf("ts3: |%s|\n", strtrim(ts3));
+  printf("ts4: |%s|\n", strtrim(ts4));
 } */
 
 /* returns a random line from a file.
