@@ -170,11 +170,11 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
   char response[512];
 
   /* set the file if it's specified, otherwise use the default */
-  if (argc < 2) {
+  if (argc < 1) {
     strcpy(srcFile, "/etc/security/pam_pkulcha.txt");
   }
   else {
-    strcpy(srcFile, argv[1]);
+    strcpy(srcFile, argv[0]);
   }
   pam_syslog(pamh, LOG_INFO, "srcFile: %s\n", srcFile);
 
