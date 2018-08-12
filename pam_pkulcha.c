@@ -1,3 +1,41 @@
+/* pam_pkulcha.c (sounds like 'pop culture'?)
+ * Jason Milen - Aug 2018
+ *
+ * WARNING! THIS MODULE SHOULD NOT FORM A CRITICAL PART OF YOUR AUTHENTICATION
+ *          SYSTEM! It can be added as a required or optional module in your
+ *          PAM configs but do not rely on it.
+ * This PAM module was written purely as an exercise for me to learn about
+ * PAM and in the end is just a bit of fun and is really quite useless.
+ *
+ * Basically, this module selects a random challenge/response line from a file
+ * (default file is /etc/security/), prompts the authenticating user with the
+ * challenge string and checks their response against the expected response,
+ * case-insensitive. If the response is as expected PAM_SUCCESS is returned,
+ * if not PAM_AUTH_ERR is returned. Simple as that.
+ *
+ * The most basic example of using this module is to add a line like so to one
+ * of your /etc/pam.d/ PAM config files:
+ *     auth required pam_pkulcha.so [path_to_sourc_file]
+ * where the source file is optional and if not supplied, DEFAULT_SRC_FILE below
+ * is used.
+ *
+ * To specify the challenge/response pairs create/edit the source file such that
+ * each line has a challenge and response which are separated by a '|'
+ * character. I've used this file to specify the first and last parts of movie
+ * quotes (hence the reference to 'pop culture' in the name). The source file
+ * can contain comment lines (starting with the '#' character) and empty lines,
+ * both of which will be ignored.
+ *
+ * Credits:
+ *  - Roy Keene who's pam_success example, complete with automake (which I still
+ *    currently know little about) formed the basis for this module. Thanks to
+ *    his wiki page and pam_success module, I was able to fumble along enough
+ *    to get this far. http://www.rkeene.org/projects/info/wiki/222
+ *  - ShadowRanger for his answer at Stack Overflow for pulling a random line
+ *   from a file using C:
+ *   https://stackoverflow.com/questions/40118509/read-random-line-from-txt-file
+ */
+
 #define PAM_SM_ACCOUNT
 #define PAM_SM_AUTH
 #define PAM_SM_PASSWORD
@@ -16,6 +54,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
+
+#define DEFAULT_SRC_FILE "/etc/security/pam_pkulcha.txt"
 
 /* trims whitespace from the beginning the and end of a string
  */
@@ -80,14 +120,16 @@ void test_strstrip() {
 	 non-whitespace char is '#' are all skipped.
  */
 char* random_line_from_file(const char* filename) {
-	/* shamelessly copied from:
+	/* shamelessly taken from the elegant answer at:
 	   https://stackoverflow.com/questions/40118509/read-random-line-from-txt-file
 	 */
 	FILE *f;
 	size_t lineno = 0;
 	size_t selectlen;
-	char selected[256]; /* Arbitrary, make it whatever size makes sense */
-	char current[256];
+	/* buffer sizes are enough to contain the challenge and the response
+	   plus some whitespace */
+	char selected[PAM_MAX_MSG_SIZE + PAM_MAX_RESP_SIZE + 100];
+	char current[PAM_MAX_MSG_SIZE + PAM_MAX_RESP_SIZE + 100];
 	selected[0] = '\0'; /* Don't crash if file is empty */
 	double rnd;
 
@@ -102,8 +144,6 @@ char* random_line_from_file(const char* filename) {
 
 		  rnd = (double)rand()/RAND_MAX;
 			if (rnd < (1.0 / (double)(++lineno))) {
-				  /* printf("########## if condition met. rnd %.03f line %d\n", rnd, (int)lineno);
-					 */
 					strcpy(selected, current);
 			}
 	}
@@ -166,12 +206,12 @@ int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const char **argv)
 
 int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
   char srcFile[1024];
-  char challenge[512];
-  char response[512];
+  char challenge[PAM_MAX_MSG_SIZE];
+  char response[PAM_MAX_MSG_SIZE];
 
   /* set the file if it's specified, otherwise use the default */
   if (argc < 1) {
-    strcpy(srcFile, "/etc/security/pam_pkulcha.txt");
+    strcpy(srcFile, DEFAULT_SRC_FILE);
   }
   else {
     strcpy(srcFile, argv[0]);
