@@ -1,4 +1,4 @@
-# Star Wars sample file
+# Example challenge/response file - Star Wars themed
 the odds against navigating an asteroid field are... | never tell me the odds
 I love you | I know
 and I thought they smelt bad | on the outside
