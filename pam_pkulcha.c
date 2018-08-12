@@ -57,7 +57,7 @@
 
 #define DEFAULT_SRC_FILE "/etc/security/pam_pkulcha.txt"
 
-/* trims whitespace from the beginning the and end of a string
+/* trims whitespace from the beginning and the end of a string
  */
 char* strtrim(char *instr) {
 	int i, start;
