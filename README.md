@@ -34,7 +34,6 @@ make clean && make && sudo make install
 1. Create and edit a file `/etc/pam.d/pampkulchatest` such that it contains the following (again, root privleges will be required):
     ```
     auth required pam_pkulcha.so
-    auth required pam_permit.so
     ```
 1. Install **pamtester** - http://pamtester.sourceforge.net/
 1. Test the module by running the command below (for this test, the user 'bob' doesn't need to exist on the system):
