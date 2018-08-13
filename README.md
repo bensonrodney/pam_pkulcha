@@ -1,4 +1,4 @@
-# pam_pkulcha.so (sounds like 'pop culture'?)
+# pam\_pkulcha.so (sounds like 'pop culture'?)
 **WARNING!** - This module should NOT be used as a critical part of your authentication process!
 
 **pam_pkulcha.so** is a simple challenge/response PAM module which sources its challenge/response pairs from a file which you can fill with what ever you want, eg. pop culture stuff like famous qoutes/phrases from your favorite movies, hence the reference to 'pop culture' in the name.
@@ -48,6 +48,10 @@ make clean && make && sudo make install
     pamtester: successfully authenticated
     ~$
     ```
+If you get `pamtester: Module is unknown` you may need to send the command:
+```
+sudo ln -sf /usr/local/lib/security/pam_pkulcha.so /lib/x86_64-linux-gnu/security/
+```
 
 ## Using the module
 Using PAM modules to form part of your authentication system requires knowing how to write PAM configs. If you don't know how to do that you should probably do some reading but in general, if you just add the example line below to an existing config you can get pam\_pkulcha.so to be used as a part of your authentication sequence. Simply edit it into one of your existing `/etc/pam.d/` files as in the example below (NOTE that this is merely one example of a possible line in a PAM configuration file):
@@ -57,7 +61,7 @@ auth required pam_pkulcha.so [path_to_challenge_response_file]
 Specifying the source file is optional, if you don't, the default file location is `/etc/security/pam_pkulcha.txt`
 
 # Credits
-* Roy Keene who's pam_success example, complete with automake (which I still  currently know little about) formed the basis for this module. Thanks to his wiki page and pam_success module, I was able to fumble along enough to get this far.  
+* Roy Keene who's pam\_success example, complete with automake (which I still  currently know little about) formed the basis for this module. Thanks to his wiki page and pam\_success module, I was able to fumble along enough to get this far.
   * http://www.rkeene.org/projects/info/wiki/222
 * ShadowRanger for his answer at Stack Overflow for pulling a random line from a file using C:  
   * https://stackoverflow.com/questions/40118509/read-random-line-from-txt-file
