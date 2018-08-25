@@ -60,47 +60,47 @@
 /* trims whitespace from the beginning and the end of a string
  */
 char* strtrim(char *instr) {
-	int i, start;
-	char ch;
+  int i, start;
+  char ch;
 
-	/* find the index of the first non-whitespace */
-	int len = (int)strlen(instr);
-	for (i=0;instr[i] != '\0';i++) {
-		ch = instr[i];
-		if (ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r')
-      continue;
-		/* exit with i set to the current index (which is non-whitespace or
-	     the terminator of the stirng)
-			 so, 'start' becomes the index of the start of the stripped string */
-	  start = i;
-		break;
+  /* find the index of the first non-whitespace */
+  int len = (int)strlen(instr);
+  for (i=0;instr[i] != '\0';i++) {
+    ch = instr[i];
+    if (ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r')
+       continue;
+    /* exit with i set to the current index (which is non-whitespace or
+       the terminator of the stirng)
+       so, 'start' becomes the index of the start of the stripped string */
+    start = i;
+    break;
   }
 
   /* from the end of the string work back and remove whitespaces by copying
-	   the string terminator back */
-	i = strlen(instr) - 1;
+     the string terminator back */
+  i = strlen(instr) - 1;
   while (1) {
-		if (i < start) {
-			i++;
-			break;
-		}
+    if (i < start) {
+      i++;
+      break;
+    }
 
-		ch = instr[i];
-		if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
-			instr[i--] = '\0';
-			continue;
-		}
-		/* if we get here, we've hit a non-whitespace char so exit */
-		break;
-	}
+    ch = instr[i];
+    if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
+      instr[i--] = '\0';
+      continue;
+    }
+    /* if we get here, we've hit a non-whitespace char so exit */
+    break;
+  }
 
-	/* shift the whole string back to the start of the original buffer */
-	for (i=0;i<strlen(instr);i++) {
-		instr[i] = instr[start + i];
-		if (instr[i] == '\0')
-			break;
-	}
-	return instr;
+  /* shift the whole string back to the start of the original buffer */
+  for (i=0;i<strlen(instr);i++) {
+    instr[i] = instr[start + i];
+    if (instr[i] == '\0')
+      break;
+  }
+  return instr;
 }
 
 /* tests for the strtrim() function above
@@ -120,39 +120,38 @@ void test_strstrip() {
 	 non-whitespace char is '#' are all skipped.
  */
 char* random_line_from_file(const char* filename) {
-	/* shamelessly taken from the elegant answer at:
-	   https://stackoverflow.com/questions/40118509/read-random-line-from-txt-file
-	 */
-	FILE *f;
-	size_t lineno = 0;
-	size_t selectlen;
-	/* buffer sizes are enough to contain the challenge and the response
-	   plus some whitespace */
-	char selected[PAM_MAX_MSG_SIZE + PAM_MAX_RESP_SIZE + 100];
-	char current[PAM_MAX_MSG_SIZE + PAM_MAX_RESP_SIZE + 100];
-	selected[0] = '\0'; /* Don't crash if file is empty */
-	double rnd;
+  /* shamelessly taken from the elegant answer at:
+     https://stackoverflow.com/questions/40118509/read-random-line-from-txt-file
+   */
+  FILE *f;
+  size_t lineno = 0;
+  size_t selectlen;
+  /* buffer sizes are enough to contain the challenge and the response
+     plus some whitespace */
+  char selected[PAM_MAX_MSG_SIZE + PAM_MAX_RESP_SIZE + 100];
+  char current[PAM_MAX_MSG_SIZE + PAM_MAX_RESP_SIZE + 100];
+  selected[0] = '\0'; /* Don't crash if file is empty */
+  double rnd;
 
   srand(time(NULL));
 
-	f = fopen(filename, "r"); /* Add your own error checking */
-	while (fgets(current, sizeof(current), f)) {
-		  /* skip the line if it's empty or starts with a comment */
-		  strtrim(current);
-			if (current[0] == '\0' || current[0] == '#')
-				continue;
+  f = fopen(filename, "r"); /* Add your own error checking */
+  while (fgets(current, sizeof(current), f)) {
+    /* skip the line if it's empty or starts with a comment */
+    strtrim(current);
+    if (current[0] == '\0' || current[0] == '#')
+      continue;
 
-		  rnd = (double)rand()/RAND_MAX;
-			if (rnd < (1.0 / (double)(++lineno))) {
-					strcpy(selected, current);
-			}
-	}
-	fclose(f);
-	selectlen = strlen(selected);
-	if (selectlen > 0 && selected[selectlen-1] == '\n') {
-			selected[selectlen-1] = '\0';
-	}
-	return strdup(selected);
+    rnd = (double)rand()/RAND_MAX;
+    if (rnd < (1.0 / (double)(++lineno)))
+      strcpy(selected, current);
+  }
+  fclose(f);
+
+  selectlen = strlen(selected);
+  if (selectlen > 0 && selected[selectlen-1] == '\n')
+    selected[selectlen-1] = '\0';
+  return strdup(selected);
 }
 
 
